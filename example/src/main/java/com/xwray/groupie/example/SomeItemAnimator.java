@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewPropertyAnimator;
 
@@ -203,7 +204,6 @@ public class SomeItemAnimator extends SimpleItemAnimator {
         return true;
     }
 
-    // TODO
     void animateAddImpl(final RecyclerView.ViewHolder holder) {
         final View view = holder.itemView;
         final ViewPropertyAnimator animation = view.animate();
@@ -364,6 +364,9 @@ public class SomeItemAnimator extends SimpleItemAnimator {
 
                 @Override
                 public void onAnimationEnd(Animator animator) {
+                    // This call cancels the animation of the new holder somehow which
+                    // changes on rebind to the animation of oldHolder ...
+                    resetAnimation(holder);
                     newViewAnimation.setListener(null);
                     newView.setAlpha(1);
                     newView.setTranslationX(0);
@@ -483,13 +486,11 @@ public class SomeItemAnimator extends SimpleItemAnimator {
                     + "mAddAnimations list");
         }
 
-        // noinspection PointlessBooleanExpression
         if (mChangeAnimations.remove(item) && DEBUG) {
             throw new IllegalStateException("after animation is cancelled, item should not be in "
                     + "mChangeAnimations list");
         }
 
-        // noinspection PointlessBooleanExpression
         if (mMoveAnimations.remove(item) && DEBUG) {
             throw new IllegalStateException("after animation is cancelled, item should not be in "
                     + "mMoveAnimations list");
@@ -618,7 +619,14 @@ public class SomeItemAnimator extends SimpleItemAnimator {
 
     void cancelAll(List<RecyclerView.ViewHolder> viewHolders) {
         for (int i = viewHolders.size() - 1; i >= 0; i--) {
-            viewHolders.get(i).itemView.animate().cancel();
+            try {
+                viewHolders.get(i).itemView.animate().cancel();
+            } catch (Exception e) {
+                // This is needed for endAnimation, the ItemAnimator can't find some viewHolders
+                // at some indices out of any reason. This prevents that the app is crashing
+                // + it won't be logged as error
+                Log.v("ABCD", "cancelAll failed at index = " + i);
+            }
         }
     }
 

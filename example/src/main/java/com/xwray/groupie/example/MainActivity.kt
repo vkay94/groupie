@@ -12,13 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.xwray.groupie.ExpandableGroup
-import com.xwray.groupie.Group
-import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.GroupieViewHolder
-import com.xwray.groupie.OnItemClickListener
-import com.xwray.groupie.OnItemLongClickListener
-import com.xwray.groupie.Section
+import com.xwray.groupie.*
 import com.xwray.groupie.example.core.InfiniteScrollListener
 import com.xwray.groupie.example.core.Prefs
 import com.xwray.groupie.example.core.SettingsActivity
@@ -47,6 +41,12 @@ class MainActivity : AppCompatActivity() {
     private val infiniteLoadingSection = Section(HeaderItem(R.string.infinite_loading))
     private val swipeSection = Section(HeaderItem(R.string.swipe_to_delete))
     private val dragSection = Section(HeaderItem(R.string.drag_to_reorder))
+
+    private val itemAnimator = SomeItemAnimator().apply {
+        changeDuration = 300
+        addDuration = 150
+        removeDuration = 150
+    }
 
     // Normally there's no need to hold onto a reference to this list, but for demonstration
     // purposes, we'll shuffle this list and post an update periodically
@@ -211,6 +211,7 @@ class MainActivity : AppCompatActivity() {
 
         // Infinite loading section
         groupAdapter += infiniteLoadingSection
+        recyclerView.itemAnimator = itemAnimator
     }
 
     private fun populateAdapterAsync() {
@@ -312,6 +313,7 @@ class MainActivity : AppCompatActivity() {
         allGroups += infiniteLoadingSection
 
         groupAdapter.updateAsync(allGroups)
+        recyclerView.itemAnimator = itemAnimator
     }
 
     private fun makeColumnGroup(): ColumnGroup {
@@ -353,7 +355,17 @@ class MainActivity : AppCompatActivity() {
     private val onShuffleClicked = View.OnClickListener {
         ArrayList(updatableItems).apply {
             shuffle()
-            updatingGroup.update(this)
+            // Moving
+//            updatingGroup.update(this)
+
+            // Removing + adding
+//            updatingGroup.clear()
+//            updatingGroup.addAll(this)
+
+            // Changing
+            itemAnimator.endAnimations()
+            updatingGroup.updateSilently(this)
+            updatingGroup.notifyChanged()
         }
 
         // You can also do this by forcing a change with payload
