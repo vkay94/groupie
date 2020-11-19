@@ -176,6 +176,13 @@ public class Section extends NestedGroup {
         this.update(newBodyGroups, diffResult);
     }
 
+    public void updateSilently(@NonNull final Collection<? extends Group> newBodyGroups) {
+        super.removeAll(children);
+        children.clear();
+        children.addAll(newBodyGroups);
+        super.addAll(newBodyGroups);
+    }
+
     /**
      * Overloaded version of update method in which you can pass your own DiffUtil.DiffResult
      * @param newBodyGroups The new content of the section
