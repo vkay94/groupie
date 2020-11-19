@@ -20,10 +20,10 @@ public class SomeItemAnimator extends SimpleItemAnimator {
 
     private static TimeInterpolator sDefaultInterpolator;
 
-    private ArrayList<RecyclerView.ViewHolder> mPendingRemovals = new ArrayList<>();
-    private ArrayList<RecyclerView.ViewHolder> mPendingAdditions = new ArrayList<>();
-    private ArrayList<MoveInfo> mPendingMoves = new ArrayList<>();
-    private ArrayList<ChangeInfo> mPendingChanges = new ArrayList<>();
+    private final ArrayList<RecyclerView.ViewHolder> mPendingRemovals = new ArrayList<>();
+    private final ArrayList<RecyclerView.ViewHolder> mPendingAdditions = new ArrayList<>();
+    private final ArrayList<MoveInfo> mPendingMoves = new ArrayList<>();
+    private final ArrayList<ChangeInfo> mPendingChanges = new ArrayList<>();
 
     ArrayList<ArrayList<RecyclerView.ViewHolder>> mAdditionsList = new ArrayList<>();
     ArrayList<ArrayList<MoveInfo>> mMovesList = new ArrayList<>();
@@ -95,8 +95,7 @@ public class SomeItemAnimator extends SimpleItemAnimator {
         mPendingRemovals.clear();
         // Next, move stuff
         if (movesPending) {
-            final ArrayList<MoveInfo> moves = new ArrayList<>();
-            moves.addAll(mPendingMoves);
+            final ArrayList<MoveInfo> moves = new ArrayList<>(mPendingMoves);
             mMovesList.add(moves);
             mPendingMoves.clear();
             Runnable mover = new Runnable() {
@@ -119,8 +118,7 @@ public class SomeItemAnimator extends SimpleItemAnimator {
         }
         // Next, change stuff, to run in parallel with move animations
         if (changesPending) {
-            final ArrayList<ChangeInfo> changes = new ArrayList<>();
-            changes.addAll(mPendingChanges);
+            final ArrayList<ChangeInfo> changes = new ArrayList<>(mPendingChanges);
             mChangesList.add(changes);
             mPendingChanges.clear();
             Runnable changer = new Runnable() {
@@ -142,8 +140,7 @@ public class SomeItemAnimator extends SimpleItemAnimator {
         }
         // Next, add stuff
         if (additionsPending) {
-            final ArrayList<RecyclerView.ViewHolder> additions = new ArrayList<>();
-            additions.addAll(mPendingAdditions);
+            final ArrayList<RecyclerView.ViewHolder> additions = new ArrayList<>(mPendingAdditions);
             mAdditionsList.add(additions);
             mPendingAdditions.clear();
             Runnable adder = new Runnable() {
@@ -206,6 +203,7 @@ public class SomeItemAnimator extends SimpleItemAnimator {
         return true;
     }
 
+    // TODO
     void animateAddImpl(final RecyclerView.ViewHolder holder) {
         final View view = holder.itemView;
         final ViewPropertyAnimator animation = view.animate();
@@ -475,25 +473,23 @@ public class SomeItemAnimator extends SimpleItemAnimator {
         }
 
         // animations should be ended by the cancel above.
-        //noinspection PointlessBooleanExpression,ConstantConditions
         if (mRemoveAnimations.remove(item) && DEBUG) {
             throw new IllegalStateException("after animation is cancelled, item should not be in "
                     + "mRemoveAnimations list");
         }
 
-        //noinspection PointlessBooleanExpression,ConstantConditions
         if (mAddAnimations.remove(item) && DEBUG) {
             throw new IllegalStateException("after animation is cancelled, item should not be in "
                     + "mAddAnimations list");
         }
 
-        //noinspection PointlessBooleanExpression,ConstantConditions
+        // noinspection PointlessBooleanExpression
         if (mChangeAnimations.remove(item) && DEBUG) {
             throw new IllegalStateException("after animation is cancelled, item should not be in "
                     + "mChangeAnimations list");
         }
 
-        //noinspection PointlessBooleanExpression,ConstantConditions
+        // noinspection PointlessBooleanExpression
         if (mMoveAnimations.remove(item) && DEBUG) {
             throw new IllegalStateException("after animation is cancelled, item should not be in "
                     + "mMoveAnimations list");
