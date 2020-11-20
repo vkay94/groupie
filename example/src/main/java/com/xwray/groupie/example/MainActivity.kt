@@ -354,7 +354,7 @@ class MainActivity : AppCompatActivity() {
 
     private val onShuffleClicked = View.OnClickListener {
         ArrayList(updatableItems).apply {
-            shuffle()
+//            shuffle()
             // Moving
 //            updatingGroup.update(this)
 
@@ -362,10 +362,18 @@ class MainActivity : AppCompatActivity() {
 //            updatingGroup.clear()
 //            updatingGroup.addAll(this)
 
-            // Changing
+            // Changing (+ opt. add/remove)
+            val list =
+                if (updatingGroup.itemCount < 6) {
+                    this.subList(0, 7)
+                } else {
+                    this.subList(0, 4)
+                }
+
+            list.reverse()
+
             itemAnimator.endAnimations()
-            updatingGroup.updateSilently(this)
-            updatingGroup.notifyChanged()
+            updatingGroup.refresh(list)
         }
 
         // You can also do this by forcing a change with payload

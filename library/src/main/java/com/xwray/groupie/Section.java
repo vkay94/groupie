@@ -176,11 +176,24 @@ public class Section extends NestedGroup {
         this.update(newBodyGroups, diffResult);
     }
 
-    public void updateSilently(@NonNull final Collection<? extends Group> newBodyGroups) {
+    public void refresh(@NonNull final Collection<? extends Group> newBodyGroups) {
+        final int oldItemCount = getItemCount();
         super.removeAll(children);
         children.clear();
         children.addAll(newBodyGroups);
         super.addAll(newBodyGroups);
+        final int newItemCount = getItemCount();
+
+        if (newItemCount > oldItemCount) {
+            notifyItemRangeChanged(0, oldItemCount);
+            notifyItemRangeInserted(oldItemCount, newItemCount);
+
+        } else if (newItemCount < oldItemCount) {
+            notifyItemRangeChanged(0, newItemCount);
+            notifyItemRangeRemoved(newItemCount, oldItemCount);
+        } else {
+            notifyChanged();
+        }
     }
 
     /**
