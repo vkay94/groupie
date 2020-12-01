@@ -186,11 +186,11 @@ public class Section extends NestedGroup {
 
         if (newItemCount > oldItemCount) {
             notifyItemRangeChanged(0, oldItemCount);
-            notifyItemRangeInserted(oldItemCount, newItemCount);
+            notifyItemRangeInserted(oldItemCount, newItemCount - oldItemCount + 1);
 
         } else if (newItemCount < oldItemCount) {
             notifyItemRangeChanged(0, newItemCount);
-            notifyItemRangeRemoved(newItemCount, oldItemCount);
+            notifyItemRangeRemoved(newItemCount, oldItemCount - newItemCount + 1);
         } else {
             notifyChanged();
         }
