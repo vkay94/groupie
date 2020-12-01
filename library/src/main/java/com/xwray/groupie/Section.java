@@ -194,6 +194,7 @@ public class Section extends NestedGroup {
         } else {
             notifyChanged();
         }
+        refreshEmptyState();
     }
 
     /**
